@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>TweetTrending</title>
+    <link rel="stylesheet" type="text/css" href="./jqcloud.css" />
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.js"></script>
+    <script type="text/javascript" src="./jqcloud-1.0.4.js"></script>
+    <input type="file" id="fileinput"/>
+    <script type="text/javascript">
+    function readSingleFile(evt) {
+    //Retrieve the first (and only!) File from the FileList object
+    var f = evt.target.files[0]; 
+
+    if (f) {
+      var r = new FileReader();
+      r.onload = function(e) { 
+          var contents = e.target.result;
+          var cons=contents.split("\n");  
+          var word_list = new Array();
+          var count = 0;
+          var max = 0;
+          var second =0;
+          for (var i=0;i<cons.length;i++)
+          {
+              var info=cons[i].split("\t");
+              count = parseInt(count)+parseInt(info[0]);
+              if(info[0]>parseInt(max))
+              {
+                max = info[0];
+              }
+          }
+          count = parseInt(count)-parseInt(max);
+          var ave = (parseInt)(count/99);
+          for (var i=0;i<cons.length;i++)
+          {
+              var info=cons[i].split("\t");
+              count = parseInt(count)+parseInt(info[0]);
+              if(info[0]!=parseInt(max))
+              {
+              if(info[0]>parseInt(second))
+              {
+                  second = info[0];
+              }
+              }
+          }
+
+
+          for (var i=0;i<cons.length;i++)
+          {
+          var info=cons[i].split("\t");
+          person=new Object();
+          person.text=info[1];
+          if (info[0] >= parseInt(max))
+          {
+              person.weight = info[0]/parseInt(max/second-3);
+          }
+          else if(info[0] <= parseInt(max/170))
+          {
+              person.weight = info[0]/2;
+          }
+          else
+          {
+              person.weight = info[0];
+          }
+              
+          word_list[i]=person;
+          }
+          
+
+         $(function() {
+        $("#my_favorite_latin_words").jQCloud(word_list);
+      });
+      }
+      r.readAsText(f);
+    } else { 
+      alert("Failed to load file");
+    }
+  }
+
+  document.getElementById('fileinput').addEventListener('change', readSingleFile, false);
+      
+     
+    </script>
+  </head>
+  <body>
+    <h1>TweetTrending</h1>
+    <div id="my_favorite_latin_words" style="width: 550px; height: 350px; border: 1px solid #ccc;"></div>
+  </body>
+</html>
